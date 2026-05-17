@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GS Survival - ARC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- MAIN UI CONTAINER -->
+    <div id="app" class="app hidden">
+        <!-- HEADER BAR -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">GS</div>
+                <div class="header-title" id="page-title">Survival Mode</div>
+            </div>
+            <div class="header-center">
+                <span id="wave-counter" class="wave-badge hidden">WAVE 1</span>
+            </div>
+            <div class="header-right">
+                <button class="btn-close" onclick="closeUI()">ESC</button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            <!-- LEFT PANEL: STATUS -->
+            <aside class="panel-left">
+                <div class="status-section">
+                    <h3 class="section-title">OPERATIVE STATUS</h3>
+                    <div class="status-items">
+                        <div class="status-item">
+                            <span class="status-label">Health</span>
+                            <div class="status-bar">
+                                <div id="health-bar" class="status-fill"></div>
+                            </div>
+                            <span id="health-text" class="status-text">—</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Armor</span>
+                            <div class="status-bar">
+                                <div id="armor-bar" class="status-fill"></div>
+                            </div>
+                            <span id="armor-text" class="status-text">—</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Distance to Zone</span>
+                            <div class="status-bar">
+                                <div id="zone-bar" class="status-fill"></div>
+                            </div>
+                            <span id="zone-text" class="status-text">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TEAM ROSTER -->
+                <div class="status-section">
+                    <h3 class="section-title">TEAM (SQUAD)</h3>
+                    <div id="team-roster" class="team-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- CENTER PANEL: CONTENT AREA -->
+            <div class="panel-center">
+                <div id="content" class="content-wrapper">
+                    <!-- MAIN MENU -->
+                    <section id="menu-main" class="menu-section">
+                        <div class="menu-header">
+                            <h2>MISSION BRIEFING</h2>
+                            <p>Select operation mode</p>
+                        </div>
+                        <div class="menu-buttons">
+                            <button class="menu-btn" onclick="showMenu('mode-select')">
+                                <span class="btn-icon">▶</span>
+                                <span class="btn-text">Start Solo</span>
+                            </button>
+                            <button class="menu-btn" onclick="showMenu('lobby')">
+                                <span class="btn-icon">◆</span>
+                                <span class="btn-text">Invite Squad</span>
+                            </button>
+                            <button class="menu-btn" onclick="showMenu('upgrades')">
+                                <span class="btn-icon">⚙</span>
+                                <span class="btn-text">Market</span>
+                            </button>
+                            <button class="menu-btn" onclick="closeUI()">
+                                <span class="btn-icon">✕</span>
+                                <span class="btn-text">Exit</span>
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- STAGE SELECT -->
+                    <section id="menu-mode-select" class="menu-section hidden">
+                        <div class="menu-header">
+                            <h2>SELECT ZONE</h2>
+                            <p>Choose your operation area</p>
+                        </div>
+                        <div id="stage-list" class="stage-grid">
+                            <!-- Populated by JS from config -->
+                        </div>
+                        <button class="btn-back" onclick="showMenu('main')">← BACK</button>
+                    </section>
+
+                    <!-- LOBBY & INVITES -->
+                    <section id="menu-lobby" class="menu-section hidden">
+                        <div class="menu-header">
+                            <h2>SQUAD MANAGEMENT</h2>
+                            <p>Build your team or join public lobby</p>
+                        </div>
+                        <div class="lobby-content">
+                            <div class="lobby-section">
+                                <h4>Invited Players</h4>
+                                <div id="invited-players-list" class="player-list">
+                                    <p class="empty-state">No players invited</p>
+                                </div>
+                                <button class="btn-primary" onclick="sendInviteDialog()">+ Invite Player</button>
+                            </div>
+                            <div class="lobby-sep"></div>
+                            <div class="lobby-section">
+                                <h4>Public Lobbies</h4>
+                                <div id="public-lobbies-list" class="lobby-list">
+                                    <p class="empty-state">Checking for lobbies...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-back" onclick="showMenu('main')">← BACK</button>
+                    </section>
+
+                    <!-- UPGRADES / MARKET -->
+                    <section id="menu-upgrades" class="menu-section hidden">
+                        <div class="menu-header">
+                            <h2>COMBAT MARKET</h2>
+                            <p>Purchase tactical upgrades</p>
+                        </div>
+                        <div class="upgrades-container">
+                            <div class="upgrade-category">
+                                <h4>Armor</h4>
+                                <div id="armor-upgrades" class="upgrade-list">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                            <div class="upgrade-category">
+                                <h4>Weapons</h4>
+                                <div id="weapon-upgrades" class="upgrade-list">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-back" onclick="showMenu('main')">← BACK</button>
+                    </section>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: ARC INVENTORY SYSTEM -->
+            <aside class="panel-right arc-inventory">
+                <div class="arc-header">
+                    <h3 class="arc-title">ARC INVENTORY</h3>
+                    <span id="inventory-weight" class="arc-weight">0/100 kg</span>
+                </div>
+
+                <div class="arc-tabs">
+                    <button class="arc-tab active" onclick="switchArcTab('items')">Items</button>
+                    <button class="arc-tab" onclick="switchArcTab('weapons')">Weapons</button>
+                    <button class="arc-tab" onclick="switchArcTab('gear')">Gear</button>
+                </div>
+
+                <div id="arc-items-tab" class="arc-tab-content active">
+                    <div id="arc-inventory-items" class="arc-item-list">
+                        <p class="empty-state">No items</p>
+                    </div>
+                </div>
+
+                <div id="arc-weapons-tab" class="arc-tab-content hidden">
+                    <div id="arc-inventory-weapons" class="arc-item-list">
+                        <p class="empty-state">No weapons</p>
+                    </div>
+                </div>
+
+                <div id="arc-gear-tab" class="arc-tab-content hidden">
+                    <div id="arc-inventory-gear" class="arc-item-list">
+                        <p class="empty-state">No gear</p>
+                    </div>
+                </div>
+
+                <div class="arc-actions">
+                    <button class="arc-btn-drop" onclick="dropSelectedItem()">DROP ITEM</button>
+                </div>
+            </aside>
+        </main>
+
+        <!-- BOTTOM INFO BAR -->
+        <footer class="footer">
+            <div class="footer-left">
+                <span id="cash-display">$ 0</span>
+            </div>
+            <div class="footer-center">
+                <span id="location-display">—</span>
+            </div>
+            <div class="footer-right">
+                <span id="timer-display">—</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div id="notifications" class="notifications-container"></div>
+
+    <!-- DIALOGS -->
+    <dialog id="invite-dialog" class="dialog">
+        <div class="dialog-content">
+            <h3>Send Invite</h3>
+            <p>Enter player ID to invite:</p>
+            <input id="invite-player-id" type="text" class="dialog-input" placeholder="Player ID">
+            <div class="dialog-buttons">
+                <button class="btn-primary" onclick="confirmInvite()">Send</button>
+                <button class="btn-secondary" onclick="document.getElementById('invite-dialog').close()">Cancel</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script src="script.js"></script>
+</body>
+</html>
