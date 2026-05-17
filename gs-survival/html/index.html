@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GS Nexus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app" class="hidden" aria-hidden="true">
+        <div id="overlay"></div>
+
+        <div id="panel">
+
+            <!-- ═══ TOP COMMAND BAR ═════════════════════════════════════════ -->
+            <header id="panel-header" class="top-bar">
+                <div id="panel-titles">
+                    <span id="panel-main-title">GS</span>
+                    <span id="panel-sub-title">NEXUS KOMUTA</span>
+                </div>
+                <div class="top-bar-center">
+                    <div id="breadcrumb"><span id="breadcrumb-text">Ana Menü</span></div>
+                </div>
+                <div class="top-bar-end">
+                    <button id="close-btn" type="button" onclick="closeMenu()">&#x2715; ESC</button>
+                </div>
+            </header>
+
+            <!-- ═══ MAIN: LEFT STATUS | TRANSPARENT CENTER | RIGHT NAV ══════ -->
+            <div id="pubg-main-container">
+
+                <!-- LEFT: Operator status HUD -->
+                <aside class="pubg-info-rail">
+                    <div id="status-strip" class="pubg-crafter-pass">
+                        <div id="status-strip-title" class="pass-header">OPERATÖR</div>
+
+                        <div class="status-card">
+                            <div class="status-row">
+                                <span class="status-label" id="hud-health-label">KARAKTER</span>
+                                <span class="status-value" id="hud-health-value" aria-live="polite">—</span>
+                            </div>
+                            <div class="status-bar"><span id="hud-health-bar"></span></div>
+                        </div>
+
+                        <div class="status-card">
+                            <div class="status-row">
+                                <span class="status-label" id="hud-radiation-label">BÖLGE</span>
+                                <span class="status-value" id="hud-radiation-value" aria-live="polite">—</span>
+                            </div>
+                            <div class="status-bar"><span id="hud-radiation-bar"></span></div>
+                        </div>
+
+                        <div class="status-card">
+                            <div class="status-row">
+                                <span class="status-label" id="hud-inventory-label">GELİŞTİRME</span>
+                                <span class="status-value" id="hud-inventory-value" aria-live="polite">—</span>
+                            </div>
+                            <div class="status-bar"><span id="hud-inventory-bar"></span></div>
+                        </div>
+
+                        <div class="status-card">
+                            <div class="status-row">
+                                <span class="status-label" id="hud-signal-label">TAKIM</span>
+                                <span class="status-value" id="hud-signal-value" aria-live="polite">—</span>
+                            </div>
+                            <div class="status-bar"><span id="hud-signal-bar"></span></div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- CENTER: Transparent — game characters visible here -->
+                <div id="panel-body" class="pubg-workspace">
+                    <div id="content"></div>
+                </div>
+
+                <!-- RIGHT: Navigation sidebar -->
+                <aside id="menu-sidebar-shell" class="hidden">
+                    <div id="menu-sidebar"></div>
+                </aside>
+
+            </div><!-- /#pubg-main-container -->
+
+            <!-- ═══ BOTTOM SQUAD BAR ═════════════════════════════════════════ -->
+            <div id="mission-brief" class="squad-bar hidden">
+
+                <!-- Operation info -->
+                <div class="squad-brief">
+                    <div class="squad-op-tag">OPERASYON</div>
+                    <div id="brief-title" class="squad-op-title">Hazırlık</div>
+                    <div id="brief-text" class="squad-op-desc">Takım durumunu kontrol et.</div>
+                    <div id="brief-extraction" class="brief-extraction hidden">
+                        <div id="brief-extraction-phase" class="brief-extraction-phase"></div>
+                        <div id="brief-extraction-objective" class="brief-extraction-objective"></div>
+                        <div id="brief-extraction-countdown" class="brief-extraction-countdown"></div>
+                    </div>
+                </div>
+
+                <div class="squad-sep"></div>
+
+                <!-- Player roster -->
+                <div class="squad-roster">
+
+                    <!-- Self -->
+                    <div class="squad-player-card squad-player-self" id="roster-self-card">
+                        <div class="squad-dot"></div>
+                        <div class="squad-player-info">
+                            <div class="squad-player-name" id="roster-self-name">Operatif</div>
+                            <div class="squad-player-badge" id="roster-self-badge">SOLO</div>
+                        </div>
+                    </div>
+
+                    <!-- Team members injected by JS -->
+                    <div id="lobby-members-panel" class="hidden">
+                        <div id="lobby-members-list" class="squad-member-list"></div>
+                    </div>
+
+                </div>
+
+                <div class="squad-sep"></div>
+
+                <!-- Ready action -->
+                <div class="squad-cta">
+                    <div class="squad-progress-wrap"><span id="brief-progress-bar"></span></div>
+                    <button id="brief-tag" class="pubg-ready-btn" onclick="handleReadyButton()">BEKLE</button>
+                </div>
+
+            </div><!-- /.squad-bar -->
+
+        </div><!-- /#panel -->
+
+        <div id="map-preview-box" class="hidden">
+            <div class="map-preview-title">BÖLGE İSTİHBARATI</div>
+            <div class="map-image-placeholder">Sinyal Aranıyor...</div>
+            <div class="map-desc">Seçilen bölgenin uydu görüntüsü ve tehlike seviyesi yükleniyor.</div>
+        </div>
+
+        <div id="hud-tooltip" class="hidden" role="status" aria-live="polite"></div>
+    </div>
+
+    <!-- ARC In-game HUD (never modified) -->
+    <div id="arc-overlay-root" class="arc-overlay-root hidden" aria-hidden="true">
+        <div id="arc-result-banner" class="arc-result-banner hidden" aria-live="polite" role="status">
+            <div id="arc-result-banner-label" class="arc-result-banner-label">ARC TAHLİYE</div>
+            <div id="arc-result-banner-title" class="arc-result-banner-title">LOBİYE DÖNÜLÜYOR</div>
+        </div>
+
+        <div id="arc-progress-card" class="arc-progress-card hidden" aria-live="polite" role="status">
+            <div class="arc-progress-kicker">İŞLEM</div>
+            <div id="arc-progress-title" class="arc-progress-title">Operasyon Sürüyor</div>
+            <div id="arc-progress-label" class="arc-progress-label">Lütfen bekle...</div>
+            <div class="arc-progress-track">
+                <span id="arc-progress-fill" class="arc-progress-fill"></span>
+            </div>
+            <div class="arc-progress-meta">
+                <span id="arc-progress-percent" class="arc-progress-percent">0%</span>
+                <span id="arc-progress-cancel" class="arc-progress-cancel">ESC ile iptal edebilirsin</span>
+            </div>
+        </div>
+
+        <div id="arc-barricade-placement-card" class="arc-barricade-placement-card hidden" aria-live="polite" role="status">
+            <div class="arc-barricade-placement-kicker">YERLEŞTİRME</div>
+            <div id="arc-barricade-placement-title" class="arc-barricade-placement-title">ARC Barricade Kit</div>
+            <div id="arc-barricade-placement-controls" class="arc-barricade-placement-controls"></div>
+        </div>
+
+        <div id="arc-info-panel" class="arc-info-panel hidden">
+            <div class="arc-card-header arc-info-header">
+                <div class="arc-card-heading">
+                    <div class="arc-card-kickers">
+                        <div class="arc-info-kicker">ARC BİLGİ</div>
+                        <div class="arc-card-chip">CANLI</div>
+                    </div>
+                    <div id="arc-info-title" class="arc-info-title">ARC Operasyonu</div>
+                    <div id="arc-info-subtitle" class="arc-info-subtitle">Saha telemetrisi</div>
+                </div>
+            </div>
+            <div id="arc-info-lines" class="arc-info-lines"></div>
+            <div id="arc-info-prompt" class="arc-info-prompt hidden"></div>
+        </div>
+
+        <div id="arc-team-panel" class="arc-team-panel hidden">
+            <div class="arc-team-header">
+                <div class="arc-card-heading">
+                    <div class="arc-card-kickers">
+                        <div class="arc-team-kicker">TAKIM</div>
+                        <div class="arc-card-chip">LINK</div>
+                    </div>
+                    <div class="arc-team-title">ARC Bağlantısı</div>
+                </div>
+                <div id="arc-team-count" class="arc-team-count">0 ÜYE</div>
+            </div>
+            <div id="arc-team-members" class="arc-team-members"></div>
+        </div>
+
+        <div id="arc-notify-stack" class="arc-notify-stack" aria-live="polite"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
